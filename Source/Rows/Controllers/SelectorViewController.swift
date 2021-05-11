@@ -133,6 +133,12 @@ open class _SelectorViewController<Row: SelectableRowType, OptionsRow: OptionsPr
         return row as! OptionsRow
     }
 
+    // 2019-10-17 Version 5.1.0 - Vet Smart - Rodrigo Gomes - Start
+    public var shouldDisplayCustomOptionRow: Bool?
+    public var customOptionRowPlaceholder: String?
+    fileprivate let customOptionRowTag = "vetCustomOptionRowTag"
+    // 2019-10-17 Version 5.1.0 - Vet Smart - Rodrigo Gomes - Finish
+
     override public init(style: UITableView.Style) {
         super.init(style: style)
     }
@@ -174,8 +180,36 @@ open class _SelectorViewController<Row: SelectableRowType, OptionsRow: OptionsPr
         } else {
             form +++ section(with: options, header: nil, footer: nil)
         }
+        
+        // 2019-10-17 Version 5.1.0 - Vet Smart - Rodrigo Gomes - Start
+        if shouldDisplayCustomOptionRow ?? false {
+            if options is [String] {
+                form +++ Section()
+                    <<< TextRow(customOptionRowTag) { row in
+                        row.placeholder = customOptionRowPlaceholder
+                        row.cellSetup { (cell, row) in
+                            cell.textField.autocorrectionType = .no
+                            cell.textField.autocapitalizationType = .none
+                        }
+                }
+
+                navigationItem.rightBarButtonItem = UIBarButtonItem(title: "OK", style: .plain, target: nil, action: #selector(closeController))
+            }
+        }
+        // 2019-10-17 Version 5.1.0 - Vet Smart - Rodrigo Gomes - Finish
     }
-    
+
+    // 2019-10-17 Version 5.1.0 - Vet Smart - Rodrigo Gomes - Start
+    @objc fileprivate func closeController() {
+        if let customRow = form.rowBy(tag: customOptionRowTag) as? RowOf<String> {
+            if let text = customRow.value as? Row.Cell.Value {
+                row.value = text
+            }
+        }
+        onDismissCallback?(self)
+    }
+    // 2019-10-17 Version 5.1.0 - Vet Smart - Rodrigo Gomes - Finish
+
     func optionsBySections(with options: [Row.Cell.Value]) -> [(String, [Row.Cell.Value])]? {
         guard let sectionKeyForValue = sectionKeyForValue else { return nil }
 
@@ -197,11 +231,21 @@ open class _SelectorViewController<Row: SelectableRowType, OptionsRow: OptionsPr
                 
                 if let form = row.section?.form {
                     for section in form where section !== row.section && section is SelectableSection<Row> {
+                        // 2019-10-17 Version 5.1.0 - Vet Smart - Rodrigo Gomes - Start
+                        /*
                         let section = section as Any as! SelectableSection<Row>
                         if let selectedRow = section.selectedRow(), selectedRow !== row {
                             selectedRow.value = nil
                             selectedRow.updateCell()
                         }
+                        */
+                        if let section = section as Any as? SelectableSection<Row> {
+                            if let selectedRow = section.selectedRow(), selectedRow !== row {
+                                selectedRow.value = nil
+                                selectedRow.updateCell()
+                            }
+                        }
+                        // 2019-10-17 Version 5.1.0 - Vet Smart - Rodrigo Gomes - Finish
                     }
                 }
                 
