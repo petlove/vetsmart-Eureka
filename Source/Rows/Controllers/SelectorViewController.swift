@@ -196,6 +196,7 @@ open class _SelectorViewController<Row: SelectableRowType, OptionsRow: OptionsPr
                 navigationItem.rightBarButtonItem = UIBarButtonItem(title: "OK", style: .plain, target: nil, action: #selector(closeController))
             }
         }
+        // Teste de Commit
         // 2019-10-17 Version 5.1.0 - Vet Smart - Rodrigo Gomes - Finish
     }
 
