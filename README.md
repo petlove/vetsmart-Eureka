@@ -1,4 +1,4 @@
-![Eureka: Elegant form builder in Swift](Eureka.jpg)
+![Eureka: Elegant form builder in Swift](Eureka.png)
 
 <p align="center">
 <a href="https://travis-ci.org/xmartlabs/Eureka"><img src="https://travis-ci.org/xmartlabs/Eureka.svg?branch=master" alt="Build status" /></a>
@@ -198,6 +198,50 @@ form += [Section("A"), Section("B"), Section("C")]
 
 // Append Rows into a Section
 section += [TextRow(), DateRow()]
+```
+
+### Result builders
+
+Eureka includes result builders to make form creation easy:
+
+#### @SectionBuilder
+```swift
+// Section + Section
+form = (Section("A") +++ {
+    URLRow("UrlRow_f1") { $0.title = "Url" }
+    if something {
+        TwitterRow("TwitterRow_f2") { $0.title = "Twitter" }
+    } else {
+        TwitterRow("TwitterRow_f1") { $0.title = "Twitter" }
+    }
+    AccountRow("AccountRow_f1") { $0.title = "Account" }
+})
+
+// Form + Section
+form +++ {
+    if something {
+        PhoneRow("PhoneRow_f1") { $0.title = "Phone" }
+    } else {
+        PhoneRow("PhoneRow_f2") { $0.title = "Phone" }
+    }
+    PasswordRow("PasswordRow_f1") { $0.title = "Password" }
+}
+```
+
+#### @FormBuilder
+```swift
+@FormBuilder
+var form: Form {
+    Section("Section A") { section in
+        section.tag = "Section_A"
+    }
+    if true {
+        Section("Section B") { section in
+            section.tag = "Section_B"
+        }
+    }
+    NameRow("NameRow_f1") { $0.title = "Name" }
+}
 ```
 
 ### Using the callbacks
